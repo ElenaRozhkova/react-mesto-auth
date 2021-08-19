@@ -3,21 +3,31 @@ import './../pages/index.css';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
+import Login from './Login';
+import Register from './Register';
+import InfoTooltip from './InfoTooltip';
+
+
 import ImagePopup from './ImagePopup';
 import api from "./../utils/api";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import { CurrentUserContext } from "./../contexts/CurrentUserContext";
+import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
 
 function App() {
+
     // Хук, управляющий внутренним состоянием
     const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
     const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
     const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
+    const [isInfoTooltipOpen, setIsInfoTooltipOpen] = React.useState(false);
+    
     const [selectedCard, setSelectedCard] = React.useState({});
     const [currentUser, setCurrentUser] = React.useState({});
     const [cards, setСards] = React.useState([]);
+    const [loggedIn, setLoggedIn] = React.useState(false);
 
     React.useEffect(() => {
         api.getUserInfo()
@@ -116,10 +126,18 @@ function App() {
         setIsAddPlacePopupOpen(true);
     }
 
+    function handleLoginClick() {
+        console.log("hallo");
+        setIsInfoTooltipOpen(true);
+    }
+
+
+    
     function closeAllPopups() {
         setIsEditAvatarPopupOpen(false);
         setIsEditProfilePopupOpen(false);
         setIsAddPlacePopupOpen(false);
+        setIsInfoTooltipOpen(false);
         setSelectedCard({});
     }
 
@@ -150,45 +168,57 @@ function App() {
     }
 
 
-    return ( < >
-        <
-        CurrentUserContext.Provider value = { currentUser } >
-        <
-        div className = "root-page" / >
-        <
-        div className = "root" >
-        <
-        Header / >
-        <
-        Main cards = { cards }
+    return ( <>
+        <CurrentUserContext.Provider value = { currentUser } >
+        <div className = "root-page" / >
+        <div className = "root" >
+
+        <Switch >
+        <Route path = "/sign-in" >
+        <Login / >
+        </Route>
+
+        <Route path = "/sign-up" >
+        <Register onLoginClick = {handleLoginClick}/ >
+        <InfoTooltip isOpen = { isInfoTooltipOpen }
+        onClose = { closeAllPopups }        
+        /> 
+        </Route>
+
+        <Route path = "/" >
+        <Header / >
+        <Main cards = { cards }
         onCardLike = { handleCardLike }
         onCardDelete = { handleCardDelete }
         onCardClick = { handleCardClick }
         onEditAvatar = { handleEditAvatarClick }
         onEditProfile = { handleEditProfileClick }
-        onAddPlace = { handleAddPlaceClick }
-        /> <
-        Footer / >
-        <
-        /div> <
-        EditProfilePopup isOpen = { isEditProfilePopupOpen }
+        onAddPlace = { handleAddPlaceClick }/> 
+        <Footer / >
+        </Route>
+
+        <Route exact path = "/" > { loggedIn ? < Redirect to = "/" / > : < Redirect to = "/sign-in" / > } 
+        </Route> 
+        </Switch> 
+        </div> 
+        <EditProfilePopup isOpen = { isEditProfilePopupOpen }
         onClose = { closeAllPopups }
         onUpdateUser = { handleUpdateUser }
-        /> <
-        EditAvatarPopup isOpen = { isEditAvatarPopupOpen }
+        /> 
+        <EditAvatarPopup isOpen = { isEditAvatarPopupOpen }
         onClose = { closeAllPopups }
         onUpdateAvatar = { handleUpdateAvatar }
-        /> <
-        AddPlacePopup isOpen = { isAddPlacePopupOpen }
+        /> 
+        <AddPlacePopup isOpen = { isAddPlacePopupOpen }
         onClose = { closeAllPopups }
         onAddPlace = { handleAddPlaceSubmit }
-        /> <
-        ImagePopup card = { selectedCard }
+        /> 
+        <ImagePopup card = { selectedCard }
         onClose = { closeAllPopups }
-        /> <
-        /CurrentUserContext.Provider> <
-        />
+        /> 
+        </CurrentUserContext.Provider> 
+        </>
     );
 }
 
-export default App;
+export default withRouter(App);

@@ -5,9 +5,7 @@ function InfoTooltip ({ isOpen, onClose}) {
   //const [name, setName] = React.useState('');
   //const [description, setDescription] = React.useState("");
 
-
   return (
-
     <div className={`popup  ${isOpen ? "popup_opened" : ""}`}>
     <div className={`popup__container`}>
     <form className="popup__form" >

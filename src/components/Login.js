@@ -4,9 +4,6 @@ import Header from './Header';
 function Login() {
   return (
       <>
-  <Header>
-   <div className="header__text">Регистрация</div>
-  </Header>
   <p className="login__title">Вход</p>
   <form  className="login__form">
           <input className="login__input" required id="Email" name="Email" type="text" placeholder="Email" />

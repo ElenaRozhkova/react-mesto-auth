@@ -6,6 +6,7 @@ import Footer from './Footer';
 import Login from './Login';
 import Register from './Register';
 import InfoTooltip from './InfoTooltip';
+import ProtectedRoute from './ProtectedRoute';
 
 
 import ImagePopup from './ImagePopup';
@@ -172,34 +173,35 @@ function App() {
         <CurrentUserContext.Provider value = { currentUser } >
         <div className = "root-page" / >
         <div className = "root" >
-
+        <Header / >
         <Switch >
         <Route path = "/sign-in" >
-        <Login / >
+            <Login / >
         </Route>
 
         <Route path = "/sign-up" >
-        <Register onLoginClick = {handleLoginClick}/ >
-        <InfoTooltip isOpen = { isInfoTooltipOpen }
-        onClose = { closeAllPopups }        
-        /> 
+            <Register onLoginClick = {handleLoginClick}/ >
+            <InfoTooltip isOpen = { isInfoTooltipOpen }
+            onClose = { closeAllPopups }        
+         /> 
         </Route>
 
-        <Route path = "/" >
-        <Header / >
-        <Main cards = { cards }
-        onCardLike = { handleCardLike }
-        onCardDelete = { handleCardDelete }
-        onCardClick = { handleCardClick }
-        onEditAvatar = { handleEditAvatarClick }
-        onEditProfile = { handleEditProfileClick }
-        onAddPlace = { handleAddPlaceClick }/> 
-        <Footer / >
-        </Route>
-
-        <Route exact path = "/" > { loggedIn ? < Redirect to = "/" / > : < Redirect to = "/sign-in" / > } 
-        </Route> 
+        <ProtectedRoute
+          path="/"
+          loggedIn={loggedIn}
+          component={Main}
+          cards = { cards }
+          onCardLike = { handleCardLike }
+          onCardDelete = { handleCardDelete }
+          onCardClick = { handleCardClick }
+          onEditAvatar = { handleEditAvatarClick }
+          onEditProfile = { handleEditProfileClick }
+          onAddPlace = { handleAddPlaceClick }
+        />
         </Switch> 
+
+        {loggedIn && <Footer />}
+
         </div> 
         <EditProfilePopup isOpen = { isEditProfilePopupOpen }
         onClose = { closeAllPopups }

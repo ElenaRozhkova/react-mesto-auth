@@ -1,9 +1,6 @@
 import React from 'react';
-import union from './../images/Union.png';
 
-function InfoTooltip ({ isOpen, onClose}) {
-  //const [name, setName] = React.useState('');
-  //const [description, setDescription] = React.useState("");
+function InfoTooltip ({ isOpen, onClose, text, logo}) {
 
   return (
     <div className={`popup  ${isOpen ? "popup_opened" : ""}`}>
@@ -14,8 +11,8 @@ function InfoTooltip ({ isOpen, onClose}) {
               <div className="popup__close-icon"></div>
             </button>
             <div className="popup__form-registered">
-            <img className="popup__logo" src={union} alt="Логотип" />
-            <div className="popup__registered">Вы успешно зарегистрировались!</div> 
+            <img className="popup__logo" src={logo} alt="Логотип" />
+            <div className="popup__registered">{text}</div> 
             </div>          
           </fieldset>
         </form>

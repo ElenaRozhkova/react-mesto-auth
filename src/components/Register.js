@@ -2,6 +2,7 @@ import React from 'react';
 import * as Auth from './Auth.js';
 import { Link, history } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
+import InfoTooltip from './InfoTooltip';
 
 
 
@@ -15,12 +16,7 @@ class Register extends React.Component {
     this.changeEmail = this.changeEmail.bind(this);
     this.changePassword = this.changePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-  }
-    //const [username, setUsername] = React.useState('');
-    //const [email, setEmail] = React.useState("");
-    //const [password, setPassword] = React.useState("");
-    //const [confirmPassword, setConfirmPassword] = React.useState('');
-
+  } 
          changeEmail = (e) => {
           this.setState({
             email: e.target.value
@@ -35,23 +31,22 @@ class Register extends React.Component {
 
          handleSubmit = (e) => {
             e.preventDefault();
-            Auth.register(this.state.password, this.state.email).then((res) => {
-              console.log("hallo", res);
-                if(res){
-               
-                   this.props.history.push('/sign-in');
-                   
-                  /*this.setState({
+            this.props.onRegister(this.state.password, this.state.email);
+           /* Auth.register(this.state.password, this.state.email).then((res) => {
+                if(res){                                  
+                  this.setState({
                     message: ''
-                  }, () => {
-                    this.props.history.push('/login');
+                  }, () => {                   
+                    
+                    this.props.onLoginClick(true);
+                    this.props.history.push('/sign-in');
                   })
                 } else {
                   this.setState({
                     message: 'Что-то пошло не так!'
-                  })*/
+                  })
                 }
-              });
+              });*/
         }
         render(){
         return (
@@ -63,7 +58,7 @@ class Register extends React.Component {
                     <div className="login__button-container">
                         <button type="submit" className="login__link" onClick={this.props.onLoginClick} >Зарегистрироваться</button>
                     </div>
-                    <div className="login__submit">Уже зарегистрированы? Войти</div>
+                    <Link to="sign-in" className="login__submit">Уже зарегистрированы? Войти</Link>
                 </form>
             </>
         );

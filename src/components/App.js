@@ -7,7 +7,10 @@ import Login from './Login';
 import Register from './Register';
 import InfoTooltip from './InfoTooltip';
 import ProtectedRoute from './ProtectedRoute';
+import * as Auth from './Auth.js';
 
+import union from './../images/Union.png';
+import union2 from './../images/Union2.svg';
 
 import ImagePopup from './ImagePopup';
 import api from "./../utils/api";
@@ -15,7 +18,7 @@ import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import { CurrentUserContext } from "./../contexts/CurrentUserContext";
-import { Route, Switch, withRouter, Redirect } from 'react-router-dom';
+import { Route, Switch, withRouter, useHistory } from 'react-router-dom';
 
 function App() {
 
@@ -29,6 +32,12 @@ function App() {
     const [currentUser, setCurrentUser] = React.useState({});
     const [cards, setСards] = React.useState([]);
     const [loggedIn, setLoggedIn] = React.useState(false);
+    const [myemail, setMyemail] = React.useState("");
+    
+    const [text, setText] = React.useState("");
+    const [logo, setLogo] = React.useState("");
+
+    const history = useHistory();
 
     React.useEffect(() => {
         api.getUserInfo()
@@ -127,9 +136,8 @@ function App() {
         setIsAddPlacePopupOpen(true);
     }
 
-    function handleLoginClick() {
-        console.log("hallo");
-        setIsInfoTooltipOpen(true);
+    function handleLoginClick(value) {
+        setIsInfoTooltipOpen(value);
     }
 
 
@@ -138,8 +146,12 @@ function App() {
         setIsEditAvatarPopupOpen(false);
         setIsEditProfilePopupOpen(false);
         setIsAddPlacePopupOpen(false);
-        setIsInfoTooltipOpen(false);
+        //setIsInfoTooltipOpen(false);
         setSelectedCard({});
+    }
+    function closePopupNew() {
+        setIsInfoTooltipOpen(false);
+        history.push('/sign-in');
     }
 
 
@@ -169,20 +181,69 @@ function App() {
     }
 
 
+    function handleLogin(calGoal) {
+        setLoggedIn(true);
+    }
+
+    const onRegister = (password,email) => {
+    Auth.register(password, email).
+    then((res) => {
+        if(res){ 
+            setText ("Вы успешно зарегистрировались!" ); 
+            setLogo(union);                              
+            handleLoginClick(true);
+        } 
+      })
+      .catch((err) => {
+        console.log(err);
+        setText ("Что-то пошло не так! Попробуйте ещё раз." );
+        setLogo(union2);  
+            handleLoginClick(true);    
+    })
+    }
+
+    React.useEffect(() => {
+        tokenCheck();       
+    }, []);
+
+    function tokenCheck () {
+        // если у пользователя есть токен в localStorage,
+        // эта функция проверит валидность токена
+          const jwt = localStorage.getItem('jwt');
+          console.log(jwt);
+        if (jwt){
+          // проверим токен
+          Auth.getContent(jwt).then((res) => {
+            if (res){
+                      // авторизуем пользователя
+
+              setLoggedIn(true);
+              history.push("/");
+        }
+      } );
+    }
+}
+
+function handleEmail (email){
+    setMyemail(email);
+}
+
     return ( <>
         <CurrentUserContext.Provider value = { currentUser } >
         <div className = "root-page" / >
         <div className = "root" >
-        <Header / >
+        <Header email={myemail} / >
         <Switch >
         <Route path = "/sign-in" >
-            <Login / >
+            <Login handleEmail={handleEmail} handleLogin={handleLogin} / >
         </Route>
 
         <Route path = "/sign-up" >
-            <Register onLoginClick = {handleLoginClick}/ >
+            <Register onRegister={onRegister} onLoginClick = {handleLoginClick}/ >
             <InfoTooltip isOpen = { isInfoTooltipOpen }
-            onClose = { closeAllPopups }        
+            onClose = { closePopupNew } 
+            text = {text}  
+            logo = {logo}      
          /> 
         </Route>
 

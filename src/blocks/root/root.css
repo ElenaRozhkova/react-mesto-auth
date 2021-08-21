@@ -11,6 +11,7 @@
     text-rendering: optimizeLegibility;
     margin-left: auto;
     margin-right: auto;
+    height: 1000px;
 }
 
 @media screen and (max-width: 500px) {

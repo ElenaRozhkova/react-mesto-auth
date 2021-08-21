@@ -2,11 +2,13 @@ import React from 'react';
 import avatar from "./../images/avataricon.svg";
 import Card from './Card';
 import { CurrentUserContext } from "./../contexts/CurrentUserContext";
+import Footer from './Footer';
 
 
 function Main(props) {
     const currentUser = React.useContext(CurrentUserContext);
     return (
+        <>
         <main className="content">
             <section className="profile root__section">
                 <div className="profile__avatar-info">
@@ -33,6 +35,8 @@ function Main(props) {
                 ))}
             </section>
         </main>
+        <Footer />
+        </>
 
     );
 }

@@ -6,7 +6,7 @@ import Login from './Login';
 import Register from './Register';
 import InfoTooltip from './InfoTooltip';
 import ProtectedRoute from './ProtectedRoute';
-import * as Auth from './Auth.js';
+import * as Auth from '../utils/Auth';
 
 import union from './../images/Union.png';
 import union2 from './../images/Union2.svg';
@@ -65,10 +65,10 @@ function App() {
                 closeAllPopups();
             }
         }
-        document.addEventListener('click', (evt) => closeByOverlay(evt));
+        document.addEventListener('click', closeByOverlay);
 
         return () => {
-            document.removeEventListener('click', (evt) => closeByOverlay(evt));
+            document.removeEventListener('click', closeByOverlay);
         };
     }, []);
 
@@ -96,7 +96,7 @@ function App() {
     function handleUpdateAvatar(url) {
         api.setUserAvatar(url.avatar)
             .then((user) => {
-                let copy = Object.assign({}, currentUser);
+                const copy = Object.assign({}, currentUser);
                 copy.avatar = user.avatar;
                 setCurrentUser(copy);
                 closeAllPopups();
@@ -153,9 +153,13 @@ function App() {
         // Снова проверяем, есть ли уже лайк на этой карточке
         const isLiked = card.likes.some(i => i._id === currentUser._id);
         // Отправляем запрос в API и получаем обновлённые данные карточки
-        api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
+        api.changeLikeCardStatus(card._id, !isLiked)
+        .then((newCard) => {
             // Формируем новый массив на основе имеющегося, подставляя в него новую карточку и обновляем стейт
             setСards((state) => cards.map((c) => c._id === card._id ? newCard : c));
+        })
+        .catch((err) => {
+            console.log(err);
         });
     }
 
@@ -163,7 +167,7 @@ function App() {
         api.deleteCard(card._id)
             .then(() => {
                 // Формируем новый массив на основе имеющегося, удаляя из него карточку card._id
-                var newCards = cards.filter(function (c) {
+                const newCards = cards.filter(function (c) {
                     return c._id !== card._id;
                 });
                 // Обновляем стейт
@@ -189,7 +193,6 @@ function App() {
                 }
             })
             .catch((err) => {
-                console.log(err);
                     setText("Что-то пошло не так! Попробуйте ещё раз.");
                     setLogo(union2);
                     handleLoginClick(true);
@@ -218,14 +221,18 @@ function App() {
         const jwt = localStorage.getItem('jwt');
         if (jwt) {
             // проверим токен
-            Auth.getContent(jwt).then((res) => {
+            Auth.getContent(jwt)
+            .then((res) => {
                 if (res) {
-                    // handleEmail(res.data.email);
+                     handleEmail(res.data.email);
                     // авторизуем пользователя
                     setLoggedIn(true);
                     history.push("/");
                 }
-            });
+            })            
+            .catch((err) => {
+                console.log(err);
+            })
         }
     }
 
@@ -238,13 +245,14 @@ function App() {
     }
     function onSignOut() {
         localStorage.removeItem('jwt');
+        handleEmail('');
         history.push('/sign-in');
     }
 
-    return (<>
+    return (
+        <div className="App">
         <CurrentUserContext.Provider value={currentUser} >
-            <div className="root-page">
-            <div className="root" >
+            <div className="root">
                 <Header email={myemail} onSignOut={onSignOut} />
                 <Switch >
                     <Route path="/sign-in" >
@@ -252,12 +260,7 @@ function App() {
                     </Route>
 
                     <Route path="/sign-up" >
-                        <Register onRegister={onRegister} onLoginClick={handleLoginClick} />
-                        <InfoTooltip isOpen={isInfoTooltipOpen}
-                            onClose={closePopupNew}
-                            text={text}
-                            logo={logo}
-                        />
+                        <Register onRegister={onRegister} />                       
                     </Route>
 
                     <ProtectedRoute
@@ -274,7 +277,6 @@ function App() {
                     />
                 </Switch>
             </div>
-            </div>
             <EditProfilePopup isOpen={isEditProfilePopupOpen}
                 onClose={closeAllPopups}
                 onUpdateUser={handleUpdateUser}
@@ -290,8 +292,13 @@ function App() {
             <ImagePopup card={selectedCard}
                 onClose={closeAllPopups}
             />
+            <InfoTooltip isOpen={isInfoTooltipOpen}
+                            onClose={closePopupNew}
+                            text={text}
+                            logo={logo}
+                        />
         </CurrentUserContext.Provider>
-    </>
+    </div>
     );
 }
 

@@ -5,7 +5,7 @@ function InfoTooltip ({ isOpen, onClose, text, logo}) {
   return (
     <div className={`popup  ${isOpen ? "popup_opened" : ""}`}>
     <div className={`popup__container`}>
-    <form className="popup__form" >
+    <div className="popup__form" >
           <fieldset className="popup__form-set">
             <button type="button" onClick={onClose} className="popup__close">
               <div className="popup__close-icon"></div>
@@ -15,7 +15,7 @@ function InfoTooltip ({ isOpen, onClose, text, logo}) {
             <div className="popup__registered">{text}</div> 
             </div>          
           </fieldset>
-        </form>
+    </div>
       
     </div>
   </div>

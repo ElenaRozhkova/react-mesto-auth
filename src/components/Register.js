@@ -34,7 +34,7 @@ class Register extends React.Component {
                     <input className="login__input" type="email" value={this.state.email} onChange={this.changeEmail} required id="Email" name="Email" placeholder="Email" />
                     <input className="login__input" type="password" value={this.state.password} onChange={this.changePassword} required id="password" name="password" placeholder="Пароль" />
                     <div className="login__button-container">
-                        <button type="submit" className="login__link" onClick={this.props.onLoginClick} >Зарегистрироваться</button>
+                        <button type="submit" className="login__link" >Зарегистрироваться</button>
                     </div>
                     <Link to="sign-in" className="login__submit">Уже зарегистрированы? Войти</Link>
                 </form>
